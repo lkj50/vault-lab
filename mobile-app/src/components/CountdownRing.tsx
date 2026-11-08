@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
+import { theme } from "@/theme";
 
 interface CountdownRingProps {
   secondsLeft: number;
@@ -11,12 +12,12 @@ export function CountdownRing({ secondsLeft, progress }: CountdownRingProps) {
   const radius = 52;
   const circumference = 2 * Math.PI * radius;
   const dashOffset = circumference * (1 - progress);
-  const strokeColor = secondsLeft <= 5 ? "#EF4444" : "#22D3EE";
+  const strokeColor = secondsLeft <= 5 ? theme.dangerStrong : theme.accent;
 
   return (
     <View style={styles.container}>
       <Svg width={size} height={size}>
-        <Circle cx={60} cy={60} r={radius} stroke="#1F2937" strokeWidth={8} fill="none" />
+        <Circle cx={60} cy={60} r={radius} stroke={theme.borderStrong} strokeWidth={8} fill="none" />
         <Circle
           cx={60}
           cy={60}
@@ -46,11 +47,11 @@ const styles = StyleSheet.create({
   },
   seconds: {
     position: "absolute",
-    color: "#E5E7EB",
+    color: theme.text,
     fontSize: 28,
     fontWeight: "700",
   },
   danger: {
-    color: "#EF4444",
+    color: theme.dangerStrong,
   },
 });

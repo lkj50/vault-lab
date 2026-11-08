@@ -1,5 +1,31 @@
 export const theme = {
   background: "#0B0F1A",
+  surface: "#111827",
+  surfaceAccent: "#164E63",
   accent: "#22D3EE",
   text: "#E5E7EB",
+  muted: "#9CA3AF",
+  placeholder: "#6B7280",
+  border: "#374151",
+  borderStrong: "#1F2937",
+  danger: "#F87171",
+  dangerStrong: "#EF4444",
+  warningTrack: "#0891B2",
+  spacing: {
+    xs: 6,
+    sm: 10,
+    md: 16,
+    lg: 24,
+    xl: 32,
+  },
+  radius: {
+    sm: 8,
+    md: 10,
+    lg: 14,
+  },
+  typography: {
+    title: 28,
+    subtitle: 16,
+    body: 14,
+  },
 } as const;

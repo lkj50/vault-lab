@@ -1,15 +1,16 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { theme } from "@/theme";
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: "#0B0F1A" },
-        headerTintColor: "#E5E7EB",
-        tabBarStyle: { backgroundColor: "#111827" },
-        tabBarActiveTintColor: "#22D3EE",
-        tabBarInactiveTintColor: "#9CA3AF",
+        headerStyle: { backgroundColor: theme.background },
+        headerTintColor: theme.text,
+        tabBarStyle: { backgroundColor: theme.surface },
+        tabBarActiveTintColor: theme.accent,
+        tabBarInactiveTintColor: theme.muted,
       }}
     >
       <Tabs.Screen
@@ -20,7 +21,7 @@ export default function TabsLayout() {
             <Ionicons
               name="home-outline"
               size={typeof size === "number" ? size : 24}
-              color={typeof color === "string" ? color : "#22D3EE"}
+              color={typeof color === "string" ? color : theme.accent}
             />
           ),
         }}
@@ -33,7 +34,7 @@ export default function TabsLayout() {
             <Ionicons
               name="key-outline"
               size={typeof size === "number" ? size : 24}
-              color={typeof color === "string" ? color : "#22D3EE"}
+              color={typeof color === "string" ? color : theme.accent}
             />
           ),
         }}
@@ -46,7 +47,7 @@ export default function TabsLayout() {
             <Ionicons
               name="shield-checkmark-outline"
               size={typeof size === "number" ? size : 24}
-              color={typeof color === "string" ? color : "#22D3EE"}
+              color={typeof color === "string" ? color : theme.accent}
             />
           ),
         }}

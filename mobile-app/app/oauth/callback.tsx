@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppSelector } from "@/store/hooks";
+import { theme } from "@/theme";
 
 export default function OAuthCallbackScreen() {
   const router = useRouter();
@@ -15,10 +17,10 @@ export default function OAuthCallbackScreen() {
   }, [accessToken, router]);
 
   return (
-    <View style={styles.container}>
-      <ActivityIndicator color="#22D3EE" />
+    <SafeAreaView style={styles.container}>
+      <ActivityIndicator color={theme.accent} />
       <Text style={styles.text}>Procesando inicio de sesión…</Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -28,9 +30,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 12,
-    backgroundColor: "#0B0F1A",
+    backgroundColor: theme.background,
   },
   text: {
-    color: "#E5E7EB",
+    color: theme.text,
   },
 });

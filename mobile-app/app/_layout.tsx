@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { Provider } from "react-redux";
 
 import { store } from "@/store";
+import { theme } from "@/theme";
 
 export default function RootLayout() {
   return (
@@ -15,8 +16,8 @@ export default function RootLayout() {
             presentation: "modal",
             headerShown: true,
             title: "Escanear QR",
-            headerStyle: { backgroundColor: "#0B0F1A" },
-            headerTintColor: "#E5E7EB",
+            headerStyle: { backgroundColor: theme.background },
+            headerTintColor: theme.text,
           }}
         />
         <Stack.Screen name="oauth/callback" />

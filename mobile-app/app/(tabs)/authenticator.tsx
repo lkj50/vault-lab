@@ -1,12 +1,14 @@
 import { useCallback, useState } from "react";
 import { useFocusEffect, useRouter } from "expo-router";
 import {
+  ActivityIndicator,
   Button,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   deleteTotpSecret,
   getTotpMetadata,
@@ -18,6 +20,7 @@ import { CodeDisplay } from "@/components/CodeDisplay";
 import { CountdownRing } from "@/components/CountdownRing";
 import { decodeBase32, isValidBase32 } from "@/totp/base32";
 import { useTotp } from "@/totp/useTotp";
+import { theme } from "@/theme";
 
 export default function AuthenticatorTab() {
   const router = useRouter();
@@ -26,6 +29,7 @@ export default function AuthenticatorTab() {
   const [manualSecret, setManualSecret] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const totp = useTotp(secret);
 
   const loadAccount = useCallback(() => {
@@ -46,6 +50,7 @@ export default function AuthenticatorTab() {
     }
 
     try {
+      setSaving(true);
       decodeBase32(normalized);
       await saveTotpSecret(normalized);
       await saveTotpMetadata({
@@ -60,6 +65,8 @@ export default function AuthenticatorTab() {
       setError("");
     } catch {
       setError("No fue posible guardar la semilla.");
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -73,15 +80,16 @@ export default function AuthenticatorTab() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator color={theme.accent} />
         <Text style={styles.text}>Cargando autenticador...</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (!secret) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Text style={styles.title}>Configurar Authenticator</Text>
         <Button title="Escanear QR" onPress={() => router.push("/scan")} />
         <Text style={styles.label}>O pega la semilla Base32</Text>
@@ -93,14 +101,18 @@ export default function AuthenticatorTab() {
           placeholderTextColor="#6B7280"
           style={styles.input}
         />
-        <Button title="Guardar" onPress={() => void saveManualSeed()} />
+        {saving ? (
+          <ActivityIndicator color={theme.accent} />
+        ) : (
+          <Button title="Guardar" onPress={() => void saveManualSeed()} />
+        )}
         {!!error && <Text style={styles.error}>{error}</Text>}
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>{metadata?.issuer ?? "UniSabana"}</Text>
       <Text style={styles.account}>
         {metadata?.account ?? "estudiante@unisabana.edu.co"}
@@ -111,7 +123,7 @@ export default function AuthenticatorTab() {
         progress={totp.progress}
       />
       <Button title="Borrar cuenta" color="#EF4444" onPress={() => void removeAccount()} />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -122,36 +134,36 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 16,
     padding: 24,
-    backgroundColor: "#0B0F1A",
+    backgroundColor: theme.background,
   },
   title: {
-    color: "#22D3EE",
+    color: theme.accent,
     fontSize: 24,
     fontWeight: "700",
   },
   text: {
-    color: "#E5E7EB",
+    color: theme.text,
   },
   account: {
-    color: "#9CA3AF",
+    color: theme.muted,
   },
   label: {
-    color: "#E5E7EB",
+    color: theme.text,
     marginTop: 12,
   },
   input: {
     width: "100%",
     borderWidth: 1,
-    borderColor: "#374151",
+    borderColor: theme.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    color: "#E5E7EB",
-    backgroundColor: "#111827",
+    color: theme.text,
+    backgroundColor: theme.surface,
     fontFamily: "Menlo",
   },
   error: {
-    color: "#F87171",
+    color: theme.danger,
     textAlign: "center",
   },
 });

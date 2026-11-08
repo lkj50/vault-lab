@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
   Pressable,
@@ -9,13 +11,45 @@ import {
   View,
 } from "react-native";
 import { login, setSimulateCsrf } from "@/auth/oauthFlow";
+import { deleteRefreshToken, getRefreshToken } from "@/auth/tokenStorage";
+import { api, refreshAccessToken } from "@/api/client";
+import { store } from "@/store";
+import { loggedOut } from "@/store/authSlice";
+import { theme } from "@/theme";
 
 export default function HomeScreen() {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [demoCsrf, setDemoCsrf] = useState(false);
+  const [restoring, setRestoring] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function restoreSession() {
+      const refreshToken = await getRefreshToken();
+      if (!refreshToken || store.getState().auth.accessToken) return;
+
+      if (mounted) setRestoring(true);
+      try {
+        await refreshAccessToken();
+        await api.get("/api/perfil");
+        if (mounted) router.replace("/(tabs)/home");
+      } catch {
+        await deleteRefreshToken();
+        store.dispatch(loggedOut());
+      } finally {
+        if (mounted) setRestoring(false);
+      }
+    }
+
+    void restoreSession();
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
 
   async function handleLogin() {
     setError("");
@@ -51,11 +85,21 @@ export default function HomeScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.logo}>
+        <Ionicons name="shield-checkmark" size={64} color={theme.accent} />
+      </View>
       <Text style={styles.title}>Vault</Text>
       <Text style={styles.subtitle}>
         Laboratorio de seguridad móvil
       </Text>
+
+      {restoring && (
+        <View style={styles.restoring}>
+          <ActivityIndicator color="#22D3EE" />
+          <Text style={styles.restoringText}>Restaurando sesión…</Text>
+        </View>
+      )}
 
       <Pressable
         disabled={loading}
@@ -106,7 +150,7 @@ export default function HomeScreen() {
       <Text selectable style={styles.result}>
         {result}
       </Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -118,6 +162,16 @@ const styles = StyleSheet.create({
     gap: 16,
     padding: 24,
     backgroundColor: "#0B0F1A",
+  },
+  logo: {
+    width: 96,
+    height: 96,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 48,
+    borderWidth: 1,
+    borderColor: theme.accent,
+    backgroundColor: theme.surface,
   },
   title: {
     color: "#22D3EE",
@@ -190,5 +244,12 @@ const styles = StyleSheet.create({
   result: {
     textAlign: "center",
     color: "#E5E7EB",
+  },
+  restoring: {
+    alignItems: "center",
+    gap: 8,
+  },
+  restoringText: {
+    color: "#22D3EE",
   },
 });

@@ -1,9 +1,11 @@
 import { useRef, useState } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter } from "expo-router";
-import { Button, Text, View, StyleSheet } from "react-native";
+import { Button, Text, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { saveTotpMetadata, saveTotpSecret } from "@/auth/tokenStorage";
 import { parseOtpauthUri } from "@/totp/otpauth";
+import { theme } from "@/theme";
 
 export default function ScanScreen() {
   const router = useRouter();
@@ -17,32 +19,32 @@ export default function ScanScreen() {
       justifyContent: "center",
       gap: 16,
       padding: 24,
-      backgroundColor: "#0B0F1A",
+      backgroundColor: theme.background,
     },
     camera: {
       width: "100%",
       flex: 1,
     },
     text: {
-      color: "#E5E7EB",
+      color: theme.text,
       textAlign: "center",
     },
     error: {
-      color: "#F87171",
+      color: theme.danger,
       textAlign: "center",
     },
   });
 
   if (!permission) {
-    return <View style={styles.container} />;
+    return <SafeAreaView style={styles.container} />;
   }
   if (!permission.granted) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Text style={styles.text}>Se necesita permiso para usar la cámara.</Text>
         <Button title="Permitir cámara" onPress={() => void requestPermission()} />
         <Button title="Volver" onPress={() => router.back()} />
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -63,7 +65,7 @@ export default function ScanScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <CameraView
         style={styles.camera}
         barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
@@ -71,6 +73,6 @@ export default function ScanScreen() {
       />
       {!!error && <Text style={styles.error}>{error}</Text>}
       <Button title="Volver" onPress={() => router.back()} />
-    </View>
+    </SafeAreaView>
   );
 }

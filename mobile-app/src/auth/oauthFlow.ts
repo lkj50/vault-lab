@@ -78,14 +78,24 @@ export async function login(): Promise<boolean> {
   });
 
   await saveRefreshToken(tokenResponse.data.refresh_token as string);
+  const accessToken = tokenResponse.data.access_token as string;
+  let profile: { sub: string; email: string; mfa_verified: boolean } = {
+    sub: "estudiante@unisabana.edu.co",
+    email: "estudiante@unisabana.edu.co",
+    mfa_verified: false,
+  };
+  try {
+    const profileResponse = await axios.get(`${baseUrl}/api/perfil`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    profile = profileResponse.data as typeof profile;
+  } catch {
+    // El perfil demo conserva los valores del usuario conocido si falla su carga.
+  }
   store.dispatch(
     loginSucceeded({
-      accessToken: tokenResponse.data.access_token as string,
-      user: {
-        sub: "estudiante@unisabana.edu.co",
-        email: "estudiante@unisabana.edu.co",
-        mfa_verified: false,
-      },
+      accessToken,
+      user: profile,
     }),
   );
 

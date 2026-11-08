@@ -1,4 +1,5 @@
 import { StyleSheet, Text } from "react-native";
+import { theme } from "@/theme";
 
 export function CodeDisplay({ code }: { code: string }) {
   const formatted = code.length === 6
@@ -10,7 +11,7 @@ export function CodeDisplay({ code }: { code: string }) {
 
 const styles = StyleSheet.create({
   code: {
-    color: "#E5E7EB",
+    color: theme.text,
     fontFamily: "Menlo",
     fontSize: 42,
     letterSpacing: 2,

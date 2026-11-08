@@ -42,6 +42,9 @@ const authSlice = createSlice({
     mfaElevated(state, action: PayloadAction<string>) {
       state.elevatedToken = action.payload;
     },
+    elevationExpired(state) {
+      state.elevatedToken = null;
+    },
     loggedOut(state) {
       state.status = "idle";
       state.accessToken = null;
@@ -56,6 +59,7 @@ export const {
   loginSucceeded,
   tokenRefreshed,
   mfaElevated,
+  elevationExpired,
   loggedOut,
 } = authSlice.actions;
 
